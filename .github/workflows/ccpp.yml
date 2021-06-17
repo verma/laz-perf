@@ -45,7 +45,7 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
       - uses: ilammy/msvc-dev-cmd@v1
-        if: matrix.os == 'windows-latest'
+          toolset: '14.16'
       - uses: conda-incubator/setup-miniconda@v2
         with:
           channels: conda-forge
@@ -67,12 +67,17 @@ jobs:
             fi
             mkdir build
             cd build
-            cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -Dgtest_force_shared_crt=ON
+            cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=`pwd`/install -Dgtest_force_shared_crt=ON
       - name: Build
         shell: bash -l {0}
         run: |
             cd build
             ninja
+      - name: Install
+        shell: bash -l {0}
+        run: |
+            cd build
+            ninja install
       - name: Test
         shell: bash -l {0}
         run: |
